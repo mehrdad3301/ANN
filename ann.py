@@ -15,6 +15,7 @@ class Network(object) :
 		
 	
 	def feed_forward(self , a) : 
+		"""Returns output of network when the input is a"""
 
 		for w , b in zip(self.weights , self.biases) : 
 			a = sigmoid(np.dot( w , a ) + b) 
@@ -22,7 +23,26 @@ class Network(object) :
 
 	def SGD(self , train_data , epochs , mini_batch_size , 
 			eta , test_data) : 
+		"""Runs Stochastic Gradient Descent algorithm on train_data.
 		
+		parameters 
+		-----------------------------------------------------------
+		train_data : list of tuples
+		a tuple is given in (x , y) where x is data and y is the 
+		label assigned to x.	
+		
+		epochs : integer 
+		SGD loops through data epochs times.
+		
+		mini_batch_size : integer 
+	
+		eta : floating point 
+		learning rate to use when updating weights and biases. 
+		
+		test_data : list of tuples 
+		-----------------------------------------------------------
+		""" 
+
 		n = len(train_data) 
 		for j in range(epochs) : 
 			for mini_batch in gen_mini_batch(
@@ -33,6 +53,8 @@ class Network(object) :
 			    self.evaluate(test_data) ,len(test_data) )) 
 
 	def update_mini_batch(self , mini_batch , eta) : 
+		"""Updates weights and biases. It averages over all 
+		training examples in mini_batch""" 
 		
 		nabla_b = [np.zeros(x.shape) for x in self.biases] 
 		nabla_w = [np.zeros(x.shape) for x in self.weights] 
@@ -48,11 +70,14 @@ class Network(object) :
 						for delta , b in zip(nabla_b , self.biases) ] 
 		 
 	def backprop(self , x , y) :
+		"""Returns a tuple (nabla_b , nabla_w) which are derivative 
+		of cost function with respect to biases and weight. nabla_b 
+		and nabla_w have the same shapes as biases and weights and 
+		can be used to update these values."""
 				
 		nabla_b = [np.zeros(z.shape) for z in self.biases] 
 		nabla_w = [np.zeros(z.shape) for z in self.weights] 
 	
-
 		#forward pass 
 		activation = x 
 		activations = [x]
@@ -79,6 +104,7 @@ class Network(object) :
 
 		
 	def evaluate(self , test_data) : 
+		"""Returns the number of correct outputs in test_data"""
 
 		results = [(np.argmax(self.feed_forward(x)) , y )
 					for (x , y) in test_data]
@@ -87,6 +113,8 @@ class Network(object) :
 
 
 def gen_mini_batch(data , mini_batch_size) : 
+	"""Returns a generator, yielding a mini-batch with 
+	given size on each time it is evoked """ 
 
 	np.random.shuffle(data)
 	for k in range(0 , len(data) , mini_batch_size) : 
@@ -94,6 +122,12 @@ def gen_mini_batch(data , mini_batch_size) :
 	return 
 
 def sigmoid_(x) : 
+	"""Returns sigmoid function defined by : 
+	1 / ( 1 + e^-x ). Note that if x is a large positive 
+	number exp(x) would overflow. Same thing can happen 
+	with large negative numbers at exp(-x). Here we used 
+	the conditional statement to get around that problem.
+	"""
 	if x > 0 : 
 		return 1 / (1 + exp(-x))
 	return exp(x) / ( 1 + exp(x) )
