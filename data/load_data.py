@@ -11,10 +11,10 @@ import numpy as np
 import struct as st 
 
 FILE_ADDRESS = { 
-	'train_images' : r'train/train-images-idx3-ubyte' ,
-	'train_labels' : r'train/train-labels-idx1-ubyte' , 
-	'test_images' : r'test/t10k-images-idx3-ubyte' ,
-	'test_labels' : r'test/t10k-labels-idx1-ubyte' ,
+	'train_images' : r'data/train/train-images-idx3-ubyte' ,
+	'train_labels' : r'data/train/train-labels-idx1-ubyte' , 
+	'test_images' : r'data/test/t10k-images-idx3-ubyte' ,
+	'test_labels' : r'data/test/t10k-labels-idx1-ubyte' ,
 }
 
 
@@ -59,8 +59,8 @@ def load_mnist(validation=False , ratio=0.0) :
 	test_images  = load_idx(FILE_ADDRESS['test_images']) 
 	test_labels  = load_idx(FILE_ADDRESS['test_labels'])
 
-	train_images = train_images.reshape(-1 , 28 * 28) 
-	test_images = test_images.reshape(-1 , 28 * 28) 
+	train_images = train_images.reshape(28 * 28 , 1) 
+	test_images = test_images.reshape(28 * 28 , 1) 
 	vec_train_labels = [vectorize_labels(x) for x in train_labels] 	
 	
 	train_data = np.array(list(zip(train_images , vec_train_labels)))

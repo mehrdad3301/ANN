@@ -16,13 +16,12 @@ class Network(object) :
 	
 	def feed_forward(self , a) : 
 
-		a = a.reshape(784 , 1) 
 		for w , b in zip(self.weights , self.biases) : 
 			a = sigmoid(np.dot( w , a ) + b) 
 		return a 
 
 	def SGD(self , train_data , epochs , mini_batch_size , 
-			eta , test_data=0) : 
+			eta , test_data) : 
 		
 		n = len(train_data) 
 		for j in range(epochs) : 
@@ -55,9 +54,8 @@ class Network(object) :
 	
 
 		#forward pass 
-		x_ = x.reshape(784 , 1)
-		activation = x_ 
-		activations = [x_]
+		activation = x 
+		activations = [x]
 		zs = [] 
 
 		for w , b in zip(self.weights , self.biases) : 
