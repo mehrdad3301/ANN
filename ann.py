@@ -1,6 +1,7 @@
 import numpy as np 
 from math import exp 
 
+
 class Network(object) : 
 
 
@@ -14,9 +15,10 @@ class Network(object) :
 		
 	
 	def feed_forward(self , a) : 
-		
+
+		a = a.reshape(784 , 1) 
 		for w , b in zip(self.weights , self.biases) : 
-			a = sigmoid(np.matmul( w , a ) + b) 
+			a = sigmoid(np.dot( w , a ) + b) 
 		return a 
 
 	def SGD(self , train_data , epochs , mini_batch_size , 
@@ -93,10 +95,11 @@ def gen_mini_batch(data , mini_batch_size) :
 		yield data[k:k+mini_batch_size] 
 	return 
 
-def sigmoid(x) : 
+def sigmoid_(x) : 
 	if x > 0 : 
-		return 1.0 / ( 1.0 + exp(-x) )
-	return exp(x) / ( 1.0 + exp(x) )
-sigmoid = np.vectorize(sigmoid)
+		return 1 / (1 + exp(-x))
+	return exp(x) / ( 1 + exp(x) )
+
+sigmoid = np.vectorize(sigmoid_) 
 def sigmoid_prime(x) :
 	return sigmoid(x) * (1 - sigmoid(x)) 	
