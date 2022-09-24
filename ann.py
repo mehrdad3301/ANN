@@ -1,5 +1,5 @@
 import numpy as np 
-from math import exp 
+from utils import sigmoid , sigmoid_prime , shuffle
 
 
 class Network(object) : 
@@ -20,8 +20,8 @@ class Network(object) :
 			a = sigmoid(np.matmul( w , a ) + b) 
 		return a 
 
-	def SGD(self , train_data , epochs , mini_batch_size , 
-			eta , test_data) : 
+	def SGD(self , train , epochs , mini_batch_size , 
+			eta , test) : 
 		"""Runs Stochastic Gradient Descent algorithm on train_data.
 		
 		parameters 
@@ -41,15 +41,15 @@ class Network(object) :
 		test_data : list of tuples 
 		-----------------------------------------------------------
 		""" 
-		n = len(train_data[0]) 
+		n = len(train[0]) 
 		for j in range(epochs) : 
-			for mini_batch in gen_mini_batch(train_data ,
-										 mini_batch_size) :
+			for mini_batch in self.gen_mini_batch(train ,
+											mini_batch_size) :
 
 				 self.update_mini_batch(mini_batch , eta) 	
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
-			    self.evaluate(test_data) ,len(test_data[0]) )) 
+			    self.evaluate(test) ,len(test[0]) )) 
 
 	def update_mini_batch(self , mini_batch , eta) : 
 		"""Updates weights and biases. It averages over all 
@@ -107,40 +107,15 @@ class Network(object) :
 		)
 
 
+	def gen_mini_batch(self , data , mini_batch_size) : 
+		"""Returns a generator, yielding a mini-batch with 
+		given size on each time it is evoked """ 
+	
+		data = shuffle(data) 
+		for k in range(0 , len(data[0]) , mini_batch_size) : 
+			yield (data[0][k:k+mini_batch_size] ,
+					data[1][k:k+mini_batch_size] ) 
+		return 
 
-def shuffle_data(data) : 
-	"""Returns shuffled data 
-	Note that scipy has better ways of implementing this, 
-	but i didn't wanna make use of any external libraries
-	except for numpy.
-	"""
-	indices = np.arange(len(data[0]))
-	np.random.shuffle(indices) 	
-	return (data[0][indices] , data[1][indices])
 
-def gen_mini_batch(data , mini_batch_size) : 
-	"""Returns a generator, yielding a mini-batch with 
-	given size on each time it is evoked """ 
 
-	data = shuffle_data(data) 
-	for k in range(0 , len(data[0]) , mini_batch_size) : 
-		yield (data[0][k:k+mini_batch_size] ,
-				data[1][k:k+mini_batch_size] ) 
-	return 
-
-def sigmoid_(x) : 
-	"""Returns sigmoid function defined by : 
-	1 / ( 1 + e^-x ). Note that if x is a large positive 
-	number exp(x) would overflow. Same thing can happen 
-	with large negative numbers at exp(-x). Here we used 
-	the conditional statement to get around that problem
-	"""
-	if x > 0 : 
-		return 1 / (1 + exp(-x))
-	return exp(x) / ( 1 + exp(x) )
-
-sigmoid = np.vectorize(sigmoid_) 
-def sigmoid_prime(x) :
-	return sigmoid(x) * (1 - sigmoid(x)) 	
-def normalize(data) : 
-	return data[0].astype('float64') / 256 , data[1]
