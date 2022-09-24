@@ -11,10 +11,10 @@ import numpy as np
 import struct as st 
 
 FILE_ADDRESS = { 
-	'train_images' : r'data/train/train-images-idx3-ubyte' ,
-	'train_labels' : r'data/train/train-labels-idx1-ubyte' , 
-	'test_images' : r'data/test/t10k-images-idx3-ubyte' ,
-	'test_labels' : r'data/test/t10k-labels-idx1-ubyte' ,
+	'train_images' : r'../data/train/train-images-idx3-ubyte' ,
+	'train_labels' : r'../data/train/train-labels-idx1-ubyte' , 
+	'test_images' : r'../data/test/t10k-images-idx3-ubyte' ,
+	'test_labels' : r'../data/test/t10k-labels-idx1-ubyte' ,
 }
 
 
