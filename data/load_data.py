@@ -35,7 +35,7 @@ def load_idx(filename:str) -> np.array :
 	data = np.asarray(st.unpack(f'>{remaining_bytes}B' , file_.read(remaining_bytes))).\
 	reshape(dimension_sizes.astype(int)) 
 
-	return data  
+	return data 
 
 def load_mnist(validation=False , ratio=0.0) : 
 	"""Return a tuple containing train/test data.
@@ -61,27 +61,27 @@ def load_mnist(validation=False , ratio=0.0) :
 
 	train_images = train_images.reshape(-1 , 28 * 28 , 1) 
 	test_images = test_images.reshape(-1 , 28 * 28 , 1) 
-	vec_train_labels = [vectorize_labels(x) for x in train_labels] 	
+	vec_train_labels = np.array([vectorize_labels(x) for x in train_labels]) 	
 	
-	train_data = np.array(list(zip(train_images , vec_train_labels)))
-	test_data = np.array(list(zip(test_images , test_labels)))
+	train_data = (train_images , vec_train_labels)
+	test_data = (test_images , test_labels)
 
 	if not validation : 
 		return (train_data , test_data)
 			
-	validation_data = np.array(list(zip(train_images[50000:] , train_labels))) 
-	train_data = train_data[:50000]
-
-	return (train_data , validation_data , test_data) 
+	validation_data = (train_images[50000:] , vec_train_labels[50000:])
+	train_data =  (train_images[:50000] , vec_train_labels[:50000])
+	return train_data , validation_data , test_data	
 
 	
+
 def vectorize_labels(j) : 
 	"""Converts single letter digits to vector with zeros in all 
 	positions except element at position j""" 
 	
 	x = np.zeros((10 , 1)) 
 	x[j] = 1
-	return x 	
+	return x.tolist() 	
 
 
 
