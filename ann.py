@@ -12,13 +12,12 @@ class Network(object) :
 		self.biases = [ np.random.randn(y , 1) for y in sizes[1:] ]
 		self.weights = [ np.random.randn(y , x)
 					for x , y in zip(sizes[:-1] , sizes[1:]) ]
-		
 	
 	def feed_forward(self , a) : 
 		"""Returns output of network when the input is a"""
 
 		for w , b in zip(self.weights , self.biases) : 
-			a = sigmoid(np.dot( w , a ) + b) 
+			a = sigmoid(np.matmul( w , a ) + b) 
 		return a 
 
 	def SGD(self , train_data , epochs , mini_batch_size , 
@@ -42,27 +41,22 @@ class Network(object) :
 		test_data : list of tuples 
 		-----------------------------------------------------------
 		""" 
-
-		n = len(train_data) 
+		n = len(train_data[0]) 
 		for j in range(epochs) : 
-			for mini_batch in gen_mini_batch(
-					 train_data , mini_batch_size) :
-				self.update_mini_batch(mini_batch , eta) 	
+			for mini_batch in gen_mini_batch(train_data ,
+										 mini_batch_size) :
+
+				 self.update_mini_batch(mini_batch , eta) 	
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
-			    self.evaluate(test_data) ,len(test_data) )) 
+			    self.evaluate(test_data) ,len(test_data[0]) )) 
 
 	def update_mini_batch(self , mini_batch , eta) : 
 		"""Updates weights and biases. It averages over all 
 		training examples in mini_batch""" 
 		
-		nabla_b = [np.zeros(x.shape) for x in self.biases] 
-		nabla_w = [np.zeros(x.shape) for x in self.weights] 
-
-		for x , y in mini_batch : 
-			delta_b , delta_w = self.backprop(x , y) 
-			nabla_b = [nb + db for db , nb in zip(delta_b,nabla_b)]
-			nabla_w = [nw + dw for nw , dw in zip(delta_w,nabla_w)] 
+		x , y = mini_batch[0] , mini_batch[1]	
+		nabla_b , nabla_w = self.backprop(x , y)
 
 		self.weights = [w - eta/len(mini_batch) * delta 
 						for delta , w in zip(nabla_w , self.weights) ] 
@@ -74,51 +68,64 @@ class Network(object) :
 		of cost function with respect to biases and weight. nabla_b 
 		and nabla_w have the same shapes as biases and weights and 
 		can be used to update these values."""
+		
 				
-		nabla_b = [np.zeros(z.shape) for z in self.biases] 
-		nabla_w = [np.zeros(z.shape) for z in self.weights] 
+		nabla_b = [None for _ in self.biases]
+		nabla_w = [None for _ in self.weights] 
 	
-		#forward pass 
 		activation = x 
-		activations = [x]
+		activations = [activation]
 		zs = [] 
 
+		#forward pass 
 		for w , b in zip(self.weights , self.biases) : 
-			z = np.dot(w , activation) + b 	
+			z = np.matmul(w , activation) + b 	
 			zs.append(z) 
 			activation = sigmoid(z) 
 			activations.append(activation) 	
 	
-		#backward pass 
 		delta = (activations[-1] - y) * sigmoid_prime(zs[-1]) 
-		nabla_b[-1] = delta 
-		nabla_w[-1] = np.dot(delta , activations[-2].T) 
+		nabla_b[-1] = np.sum(delta , axis=0)  
+		nabla_w[-1] = np.sum(np.matmul(delta ,
+		 activations[-2].transpose(0 ,2 , 1)),axis=0) 
 
+		#backward pass 
 		for l in range(2 , self.num_layers) : 
 			z = zs[-l]
 			sp = sigmoid_prime(z)
-			delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
-			nabla_b[-l] = delta
-			nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+			delta = np.matmul(self.weights[-l+1].transpose(), delta) * sp
+			nabla_b[-l] = np.sum(delta , axis = 0)
+			nabla_w[-l] = np.sum(np.matmul(delta, activations[-l-1].transpose(0 , 2 ,1)),	axis=0)
 			return (nabla_b, nabla_w)	
 
 		
-	def evaluate(self , test_data) : 
+	def evaluate(self , test) : 
 		"""Returns the number of correct outputs in test_data"""
 
-		results = [(np.argmax(self.feed_forward(x)) , y )
-					for (x , y) in test_data]
+		return np.sum(
+			np.argmax( self.feed_forward(test[0]) , axis=1 ) == test[1].reshape(-1 , 1) 
+		)
 
-		return sum([ int(x == y) for (x , y) in results ] ) 
 
+
+def shuffle_data(data) : 
+	"""Returns shuffled data 
+	Note that scipy has better ways of implementing this, 
+	but i didn't wanna make use of any external libraries
+	except for numpy.
+	"""
+	indices = np.arange(len(data[0]))
+	np.random.shuffle(indices) 	
+	return (data[0][indices] , data[1][indices])
 
 def gen_mini_batch(data , mini_batch_size) : 
 	"""Returns a generator, yielding a mini-batch with 
 	given size on each time it is evoked """ 
 
-	np.random.shuffle(data)
-	for k in range(0 , len(data) , mini_batch_size) : 
-		yield data[k:k+mini_batch_size] 
+	data = shuffle_data(data) 
+	for k in range(0 , len(data[0]) , mini_batch_size) : 
+		yield (data[0][k:k+mini_batch_size] ,
+				data[1][k:k+mini_batch_size] ) 
 	return 
 
 def sigmoid_(x) : 
@@ -126,7 +133,7 @@ def sigmoid_(x) :
 	1 / ( 1 + e^-x ). Note that if x is a large positive 
 	number exp(x) would overflow. Same thing can happen 
 	with large negative numbers at exp(-x). Here we used 
-	the conditional statement to get around that problem.
+	the conditional statement to get around that problem
 	"""
 	if x > 0 : 
 		return 1 / (1 + exp(-x))
@@ -135,3 +142,5 @@ def sigmoid_(x) :
 sigmoid = np.vectorize(sigmoid_) 
 def sigmoid_prime(x) :
 	return sigmoid(x) * (1 - sigmoid(x)) 	
+def normalize(data) : 
+	return data[0].astype('float64') / 256 , data[1]
