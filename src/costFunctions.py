@@ -3,9 +3,19 @@ from utils import sigmoid_prime
 
 
 class CostFunction(object) :
-	pass
-                                                                                                                                                      
+	
+	@staticmethod
+	def get_cost(a , y) :
+	
+		raise NotImplementedError 
+
+	@staticmethod
+	def get_delta(z , a , y) :
+
+		raise NotImplementedError 
+
 class QuadraticCost(CostFunction) :                                                                                                                   
+
 	@staticmethod
 	def get_cost(a , y) :
 	
