@@ -21,7 +21,10 @@ class Network(object) :
 		return a 
 
 	def SGD(self , train , epochs , mini_batch_size , 
-			eta , test) : 
+			lambda_=0.0 , 
+			eta,
+		    test) : 
+
 		"""Runs Stochastic Gradient Descent algorithm on train_data.
 		
 		parameters 
@@ -44,21 +47,21 @@ class Network(object) :
 		n = len(train[0]) 
 		for j in range(epochs) : 
 			for mini_batch in self.gen_mini_batch(train ,
-											mini_batch_size) :
+												  mini_batch_size) :
 
-				 self.update_mini_batch(mini_batch , eta) 	
+				 self.update_mini_batch(mini_batch , eta , lambda_ , n)
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
-			    self.evaluate(test) ,len(test[0]) )) 
+			    self.evaluate(test) , n )) 
 
-	def update_mini_batch(self , mini_batch , eta) : 
+	def update_mini_batch(self , mini_batch , eta , lambda_ , n) : 
 		"""Updates weights and biases. It averages over all 
 		training examples in mini_batch""" 
 		
 		x , y = mini_batch[0] , mini_batch[1]	
 		nabla_b , nabla_w = self.backprop(x , y)
 
-		self.weights = [w - eta/len(mini_batch) * delta 
+		self.weights = [w*(1 - lambda_*eta/n) - eta/len(mini_batch) * delta 
 						for delta , w in zip(nabla_w , self.weights) ] 
 		self.biases = [b - eta/len(mini_batch) * delta
 						for delta , b in zip(nabla_b , self.biases) ] 
