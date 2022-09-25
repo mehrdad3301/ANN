@@ -1,6 +1,6 @@
 import numpy as np 
 from utils import sigmoid , sigmoid_prime , shuffle
-from costfunctions import CrossEntropyCost
+from costFunctions import CrossEntropyCost
 
 
 class Network(object) : 
