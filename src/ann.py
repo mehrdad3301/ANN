@@ -93,7 +93,7 @@ class Network(object) :
 			activation = sigmoid(z) 
 			activations.append(activation) 	
 	
-		delta = self.cost.delta(zs[-1] , activations[-1] , y)
+		delta = self.cost.get_delta(zs[-1] , activations[-1] , y)
 		nabla_b[-1] = np.sum(delta , axis=0)  
 		nabla_w[-1] = np.sum(np.matmul(delta ,
 		 activations[-2].transpose(0 ,2 , 1)),axis=0) 
