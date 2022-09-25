@@ -1,17 +1,20 @@
 import numpy as np 
 from utils import sigmoid , sigmoid_prime , shuffle
+from costfunctions import CrossEntropyCost
 
 
 class Network(object) : 
 
 
-	def __init__(self , sizes) : 
+	def __init__(self , sizes , cost=CrossEntropyCost) : 
 		
 		self.num_layers = len(sizes) 
 		self.sizes = sizes 
+		self.cost = cost
 		self.biases = [ np.random.randn(y , 1) for y in sizes[1:] ]
 		self.weights = [ np.random.randn(y , x)
 					for x , y in zip(sizes[:-1] , sizes[1:]) ]
+		
 	
 	def feed_forward(self , a) : 
 		"""Returns output of network when the input is a"""
@@ -87,7 +90,7 @@ class Network(object) :
 			activation = sigmoid(z) 
 			activations.append(activation) 	
 	
-		delta = (activations[-1] - y) * sigmoid_prime(zs[-1]) 
+		delta = self.cost.delta(zs[-1] , activations[-1] , y)
 		nabla_b[-1] = np.sum(delta , axis=0)  
 		nabla_w[-1] = np.sum(np.matmul(delta ,
 		 activations[-2].transpose(0 ,2 , 1)),axis=0) 
