@@ -23,10 +23,13 @@ class Network(object) :
 			a = sigmoid(np.matmul( w , a ) + b) 
 		return a 
 
-	def SGD(self , train , epochs , mini_batch_size , 
+	def SGD(self , 
+			train=None ,
+			epochs=30 , 
+			mini_batch_size=100 , 
 			lambda_=0.0 , 
-			eta,
-		    test) : 
+			eta=0.1,
+		    test=None) : 
 
 		"""Runs Stochastic Gradient Descent algorithm on train_data.
 		
