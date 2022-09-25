@@ -26,7 +26,7 @@ class Network(object) :
 	def SGD(self , 
 			train=None ,
 			epochs=30 , 
-			mini_batch_size=100 , 
+			mini_batch_size=10 , 
 			lambda_=0.0 , 
 			eta=0.1,
 		    test=None) : 
@@ -58,7 +58,7 @@ class Network(object) :
 				 self.update_mini_batch(mini_batch , eta , lambda_ , n)
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
-			    self.evaluate(test) , n )) 
+			    self.evaluate(test) , len(test[0])) 
 
 	def update_mini_batch(self , mini_batch , eta , lambda_ , n) : 
 		"""Updates weights and biases. It averages over all 
