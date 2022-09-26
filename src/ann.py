@@ -23,13 +23,19 @@ class Network(object) :
 			a = sigmoid(np.matmul( w , a ) + b) 
 		return a 
 
-	def SGD(self , 
+	def SGD(
+			self , 
 			train=None ,
 			epochs=30 , 
 			mini_batch_size=10 , 
 			lambda_=0.0 , 
 			eta=0.1,
-		    test=None) : 
+			test=None,
+			monitor_training_cost=False,
+			monitor_training_accuracy=False,
+			monitor_test_cost=False,
+			monitor_test_accuracy=False,
+			) : 
 
 		"""Runs Stochastic Gradient Descent algorithm on train_data.
 		
@@ -59,7 +65,7 @@ class Network(object) :
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
 			    self.evaluate(test) , len(test[0]))) 
-
+	
 	def update_mini_batch(self , mini_batch , eta , lambda_ , n) : 
 		"""Updates weights and biases. It averages over all 
 		training examples in mini_batch""" 
@@ -108,6 +114,8 @@ class Network(object) :
 			return (nabla_b, nabla_w)	
 
 		
+	def monitor(self , ) : 
+		pass 
 	def evaluate(self , test) : 
 		"""Returns the number of correct outputs in test_data"""
 
