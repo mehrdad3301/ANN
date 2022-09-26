@@ -62,9 +62,10 @@ def load_mnist(validation=False , ratio=0.0) :
 	train_images = train_images.reshape(-1 , 28 * 28 , 1) 
 	test_images = test_images.reshape(-1 , 28 * 28 , 1) 
 	vec_train_labels = np.array([vectorize_labels(x) for x in train_labels]) 	
+	vec_test_labels  = np.array([vectorize_labels(x) for x in test_labels]) 	
 	
 	train_data = (train_images , vec_train_labels)
-	test_data = (test_images , test_labels)
+	test_data = (test_images , vec_test_labels)
 
 	if not validation : 
 		return (train_data , test_data)
