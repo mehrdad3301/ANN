@@ -114,13 +114,22 @@ class Network(object) :
 			return (nabla_b, nabla_w)	
 
 		
-	def monitor(self , ) : 
-		pass 
+	def total_cost(self , data , lambda_) : 
+			
+		n = len(data[0]) 
+		a = self.feed_forward(data[0]) 
+		cost = np.sum(self.cost.get_cost(a , data[1])) \ n 
+		cost += 0.5 * lambda_ / n * 
+		np.sum(np.linalg.norm(w) ** 2 for w in self.weights)
+		
+		return cost 
+
 	def evaluate(self , test) : 
 		"""Returns the number of correct outputs in test_data"""
 
 		return np.sum(
-			np.argmax( self.feed_forward(test[0]) , axis=1 ) == test[1].reshape(-1 , 1) 
+			np.argmax( self.feed_forward(test[0]) , axis=1 ) ==\
+			np.argmax(test[1].reshape(-1 , 1))
 		)
 
 
