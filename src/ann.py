@@ -1,6 +1,6 @@
 import numpy as np 
 from utils import sigmoid , sigmoid_prime , shuffle
-from costFunctions import CrossEntropyCost
+from cost_functions import CrossEntropyCost
 import json 
 
 

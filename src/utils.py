@@ -52,7 +52,7 @@ def load(filename) :
 	data = json.load(f) 
 
 	from ann import Network 
-	import costFunctions
+	import cost_functions
 
 	cost = getattr(costFunctions , data["cost"]) 
 	net = Network(data["sizes"] , cost=cost)
