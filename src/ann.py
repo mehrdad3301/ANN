@@ -58,7 +58,7 @@ class Network(object) :
 				 self.update_mini_batch(mini_batch , eta , lambda_ , n)
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
-			    self.evaluate(test) , len(test[0])) 
+			    self.evaluate(test) , len(test[0]))) 
 
 	def update_mini_batch(self , mini_batch , eta , lambda_ , n) : 
 		"""Updates weights and biases. It averages over all 
