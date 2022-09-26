@@ -1,5 +1,6 @@
 import numpy as np
 from math import exp 
+import json 
 
 def shuffle(data) :                                                                                                                              
 	"""Returns shuffled data                                                                                                                          
@@ -43,3 +44,19 @@ def normalize(data) :
 	"""
 
 	return data[0].astype('float64') / 256 , data[1]                                
+
+
+def load(filename) : 
+	
+	f = open(filename , 'r') 
+	data = json.load(f) 
+
+	from ann import Network 
+	import costFunctions
+
+	cost = getattr(costFunctions , data["cost"]) 
+	net = Network(data["sizes"] , cost=cost)
+	net.weights = [ np.array(w) for w in data["weights"] ] 
+	net.biases = [ np.array(b) for b in data["biases"] ]  
+	
+	return net 

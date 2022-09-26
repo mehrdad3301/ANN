@@ -1,6 +1,7 @@
 import numpy as np 
 from utils import sigmoid , sigmoid_prime , shuffle
 from costFunctions import CrossEntropyCost
+import json 
 
 
 class Network(object) : 
@@ -10,7 +11,7 @@ class Network(object) :
 		
 		self.num_layers = len(sizes) 
 		self.sizes = sizes 
-		self.cost = cost
+		self.cost = cost 
 		self.biases = [ np.random.randn(y , 1) for y in sizes[1:] ]
 		self.weights = [ np.random.randn(y , x)
 					for x , y in zip(sizes[:-1] , sizes[1:]) ]
@@ -68,6 +69,7 @@ class Network(object) :
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
 			    self.evaluate(test) , len(test[0]))) 
+
 			if monitor_training_cost : 
 				cost = self.total_cost(train , lambda_)
 				training_cost.append(cost) 
@@ -99,7 +101,7 @@ class Network(object) :
 		x , y = mini_batch[0] , mini_batch[1]	
 		nabla_b , nabla_w = self.backprop(x , y)
 
-		self.weights = [w*(1 - lambda_*eta/n) - eta/len(mini_batch) * delta 
+		self.weights = [w*(1-eta*(lambda_/n)) - delta*(eta/len(mini_batch))
 						for delta , w in zip(nabla_w , self.weights) ] 
 		self.biases = [b - eta/len(mini_batch) * delta
 						for delta , b in zip(nabla_b , self.biases) ] 
@@ -155,9 +157,20 @@ class Network(object) :
 
 		return np.sum(
 			np.argmax( self.feed_forward(test[0]) , axis=1 ) ==\
-			np.argmax(test[1].reshape(-1 , 1))
+			np.argmax( test[1] , axis=1 )
 		)
 
+	def save(self , filename) : 
+		data = { 
+				"sizes" : self.sizes , 
+				"weights" : [ w.tolist() for w in self.weights ] , 
+				"biases" : [ b.tolist() for b in self.biases ] ,  
+				"cost" : self.cost.__name__ ,  
+				}
+
+		f = open(filename , 'w') 
+		json.dump(data , f) 
+		f.close() 
 
 	def gen_mini_batch(self , data , mini_batch_size) : 
 		"""Returns a generator, yielding a mini-batch with 
@@ -168,6 +181,4 @@ class Network(object) :
 			yield (data[0][k:k+mini_batch_size] ,
 					data[1][k:k+mini_batch_size] ) 
 		return 
-
-
 
