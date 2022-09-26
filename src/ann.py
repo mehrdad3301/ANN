@@ -1,7 +1,6 @@
 import numpy as np 
 from utils import sigmoid , sigmoid_prime , shuffle
 from cost_functions import CrossEntropyCost
-from weight_initializer import init_small_weights
 import json 
 
 
@@ -14,7 +13,8 @@ class Network(object) :
 		self.sizes = sizes 
 		self.cost = cost 
 		self.biases = [ np.random.randn(y , 1) for y in sizes[1:] ]
-		self.weights = init_small_weights(sizes)
+		self.weights = [ np.random.randn(x , y) / np.sqrt(x)
+						for (x , y) in zip(sizes[1:] , sizes[:-1]) ]
 					
 		
 	
