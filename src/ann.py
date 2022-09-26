@@ -57,6 +57,9 @@ class Network(object) :
 		-----------------------------------------------------------
 		""" 
 		n = len(train[0]) 
+		training_cost , training_accuracy = [] , [] 
+		test_cost , test_accuracy = [] , [] 
+
 		for j in range(epochs) : 
 			for mini_batch in self.gen_mini_batch(train ,
 												  mini_batch_size) :
@@ -65,7 +68,30 @@ class Network(object) :
 		
 			print ("epoch: {0} -> {1} / {2}".format(j ,
 			    self.evaluate(test) , len(test[0]))) 
-	
+			if monitor_training_cost : 
+				cost = self.total_cost(train , lambda_)
+				training_cost.append(cost) 
+				print("Cost on train data : {0}".format(cost)) 
+
+			if monitor_training_accuracy : 
+				accuracy = self.evaluate(train)
+				training_accuracy.append(accuracy)  
+				print("Accuracy on train data : {0}".format(accuracy))
+
+			if monitor_test_cost : 
+				cost = self.total_cost(test , lambda_) 
+				test_cost.append(cost) 
+				print("Cost on test data : {0}".format(cost)) 
+
+			if monitor_test_accuracy : 
+				accuracy = self.evaluate(test)
+				test_accuracy.append(accuracy) 
+				print("Accuracy on test data : {0}".format(accuracy))
+
+		return training_cost , training_accuracy, \
+			test_cost , test_accuracy 
+
+
 	def update_mini_batch(self , mini_batch , eta , lambda_ , n) : 
 		"""Updates weights and biases. It averages over all 
 		training examples in mini_batch""" 
@@ -118,8 +144,8 @@ class Network(object) :
 			
 		n = len(data[0]) 
 		a = self.feed_forward(data[0]) 
-		cost = np.sum(self.cost.get_cost(a , data[1])) \ n 
-		cost += 0.5 * lambda_ / n * 
+		cost = np.sum(self.cost.get_cost(a , data[1])) / n 
+		cost += 0.5 * lambda_ / n * \
 		np.sum(np.linalg.norm(w) ** 2 for w in self.weights)
 		
 		return cost 
